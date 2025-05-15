@@ -35,6 +35,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using System.Windows.Media.Imaging;
+using System.Security.Cryptography;
 
 namespace ShareX.HelpersLib
 {
@@ -1458,7 +1459,8 @@ namespace ShareX.HelpersLib
                     for (int y = 0; y < unsafeBitmap.Height; y += pixelSize)
                     {
                         for (int x = 0; x < unsafeBitmap.Width; x += pixelSize)
-                        {
+                        { 
+                            int random = RandomCrypto.Next(-64, 64);
                             int xLimit = Math.Min(x + pixelSize, unsafeBitmap.Width);
                             int yLimit = Math.Min(y + pixelSize, unsafeBitmap.Height);
                             int pixelCount = (xLimit - x) * (yLimit - y);
@@ -1472,10 +1474,10 @@ namespace ShareX.HelpersLib
                                     ColorBgra color = unsafeBitmap.GetPixel(x2, y2);
 
                                     float pixelWeight = color.Alpha / 255f;
-
-                                    r += color.Red * pixelWeight;
-                                    g += color.Green * pixelWeight;
-                                    b += color.Blue * pixelWeight;
+                                    
+                                    r += Math.Min(Math.Max(color.Red * pixelWeight + random, 0), 255);
+                                    g += Math.Min(Math.Max(color.Green * pixelWeight + random, 0), 255);
+                                    b += Math.Min(Math.Max(color.Blue * pixelWeight + random, 0), 255);
                                     a += color.Alpha * pixelWeight;
 
                                     weightedCount += pixelWeight;

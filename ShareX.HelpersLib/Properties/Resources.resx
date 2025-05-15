@@ -259,7 +259,7 @@
     <value>Minute</value>
   </data>
   <data name="ShapeType_EffectPixelate" xml:space="preserve">
-    <value>Pixelate (P)</value>
+    <value>Secure Pixelate (P)</value>
   </data>
   <data name="ReplCodeMenuEntry_d_Current_day" xml:space="preserve">
     <value>Day</value>

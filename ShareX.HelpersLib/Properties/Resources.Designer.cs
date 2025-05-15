@@ -3156,7 +3156,7 @@ namespace ShareX.HelpersLib.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Pixelate (P).
+        ///   Looks up a localized string similar to Secure Pixelate (P).
         /// </summary>
         internal static string ShapeType_EffectPixelate {
             get {
