@@ -1450,50 +1450,42 @@ namespace ShareX.HelpersLib
             }
         }
 
-        public static void Pixelate(Bitmap bmp, int pixelSize)
+        public static void Pixelate(Bitmap bmp)
         {
-            if (pixelSize > 1)
+            using (UnsafeBitmap unsafeBitmap = new UnsafeBitmap(bmp, true))
             {
-                using (UnsafeBitmap unsafeBitmap = new UnsafeBitmap(bmp, true))
+                ColorBgra averageColor;
+                float r = 0, g = 0, b = 0, a = 0;
+                int random = RandomCrypto.Next(-32, 32);
+                float weightedCount = 0;
+
+                for (int y = 0; y < unsafeBitmap.Height; y++)
                 {
-                    for (int y = 0; y < unsafeBitmap.Height; y += pixelSize)
-                    {
-                        for (int x = 0; x < unsafeBitmap.Width; x += pixelSize)
-                        { 
-                            int random = RandomCrypto.Next(-64, 64);
-                            int xLimit = Math.Min(x + pixelSize, unsafeBitmap.Width);
-                            int yLimit = Math.Min(y + pixelSize, unsafeBitmap.Height);
-                            int pixelCount = (xLimit - x) * (yLimit - y);
-                            float r = 0, g = 0, b = 0, a = 0;
-                            float weightedCount = 0;
+                    for (int x = 0; x < unsafeBitmap.Width; x++)
+                    { 
+                        ColorBgra color = unsafeBitmap.GetPixel(x, y);
 
-                            for (int y2 = y; y2 < yLimit; y2++)
-                            {
-                                for (int x2 = x; x2 < xLimit; x2++)
-                                {
-                                    ColorBgra color = unsafeBitmap.GetPixel(x2, y2);
-
-                                    float pixelWeight = color.Alpha / 255f;
+                        float pixelWeight = color.Alpha / 255f;
                                     
-                                    r += Math.Min(Math.Max(color.Red * pixelWeight + random, 0), 255);
-                                    g += Math.Min(Math.Max(color.Green * pixelWeight + random, 0), 255);
-                                    b += Math.Min(Math.Max(color.Blue * pixelWeight + random, 0), 255);
-                                    a += color.Alpha * pixelWeight;
+                        r += Math.Min(Math.Max(color.Red * pixelWeight + random, 0), 255);
+                        g += Math.Min(Math.Max(color.Green * pixelWeight + random, 0), 255);
+                        b += Math.Min(Math.Max(color.Blue * pixelWeight + random, 0), 255);
 
-                                    weightedCount += pixelWeight;
-                                }
-                            }
+                        weightedCount += pixelWeight;
+                    }
+                }
+                averageColor = new ColorBgra(
+                    (byte)(b / weightedCount),
+                    (byte)(g / weightedCount),
+                    (byte)(r / weightedCount),
+                    (byte)(255)
+                );
 
-                            ColorBgra averageColor = new ColorBgra((byte)(b / weightedCount), (byte)(g / weightedCount), (byte)(r / weightedCount), (byte)(a / pixelCount));
-
-                            for (int y2 = y; y2 < yLimit; y2++)
-                            {
-                                for (int x2 = x; x2 < xLimit; x2++)
-                                {
-                                    unsafeBitmap.SetPixel(x2, y2, averageColor);
-                                }
-                            }
-                        }
+                for (int y = 0; y < unsafeBitmap.Height; y++)
+                {
+                    for (int x = 0; x < unsafeBitmap.Width; x++)
+                    {
+                        unsafeBitmap.SetPixel(x, y, averageColor);
                     }
                 }
             }
@@ -1501,7 +1493,7 @@ namespace ShareX.HelpersLib
 
         public static void Pixelate(Bitmap bmp, int pixelSize, int borderSize, Color borderColor)
         {
-            Pixelate(bmp, pixelSize);
+            Pixelate(bmp);
 
             if (pixelSize > 1 && borderSize > 0 && borderColor.A > 0)
             {

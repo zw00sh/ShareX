@@ -49,7 +49,7 @@ namespace ShareX.ScreenCaptureLib
 
         public override void ApplyEffect(Bitmap bmp)
         {
-            ImageHelpers.Pixelate(bmp, PixelSize);
+            ImageHelpers.Pixelate(bmp);
         }
 
         public override void OnDrawFinal(Graphics g, Bitmap bmp)
